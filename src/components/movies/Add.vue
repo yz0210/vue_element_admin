@@ -45,7 +45,7 @@
           </el-tab-pane>
           <el-tab-pane label="首映时间" name="1">
             <el-form-item label="上映日期" prop="dateFormat">
-                  <span class="demonstration">请选择首映时间</span>
+                  <span class="demonstration">请选择首映时间  </span>
                   <el-date-picker v-model="addForm.startTime" type="date" value-format=yyyy-MM-dd placeholder="选择日期"></el-date-picker>
             </el-form-item>
           </el-tab-pane>
@@ -57,11 +57,19 @@
           </el-tab-pane>
           <el-tab-pane label="电影分类" name="3">
             <el-form-item label="电影类型" prop="movies_cat">
+              <span class="demonstration">请选择电影类型  </span>
               <el-cascader :show-all-levels="false" filterable  clearable :options="cateList" :props="cateProps" v-model="typeStr" @change="handleChange">
               </el-cascader>
             </el-form-item>
             <el-form-item label="电影地区" prop="area">
-              <el-input v-model="addForm.area" ></el-input>
+<!--              <el-input v-model="addForm.area" ></el-input>-->
+              <span class="demonstration">请选择首映地区  </span>
+              <el-select v-model="addForm.area" placeholder="请选择">
+                <el-option-group v-for="group in options" :key="group.label" :label="group.label">
+                  <el-option v-for="item in group.options" :key="item.value" :label="item.label" :value="item.value">
+                  </el-option>
+                </el-option-group>
+              </el-select>
             </el-form-item>
             <el-form-item label="电影语言" prop="language">
               <el-input v-model="addForm.language" ></el-input>
@@ -227,7 +235,6 @@ export default {
 .el-checkbox {
   margin: 0 10px 0 0 !important;
 }
-
 .previewImg {
   width: 100%;
 }
