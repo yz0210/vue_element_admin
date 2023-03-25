@@ -45,7 +45,7 @@
           </el-tab-pane>
           <el-tab-pane label="首映时间" name="1">
             <el-form-item label="上映日期" prop="dateFormat">
-                  <span class="demonstration">请选择首映时间  </span>
+                  <span class="demonstration">请选择首映时间</span>
                   <el-date-picker v-model="addForm.startTime" type="date" value-format=yyyy-MM-dd placeholder="选择日期"></el-date-picker>
             </el-form-item>
           </el-tab-pane>
@@ -57,16 +57,18 @@
           </el-tab-pane>
           <el-tab-pane label="电影分类" name="3">
             <el-form-item label="电影类型" prop="movies_cat">
-              <span class="demonstration">请选择电影类型  </span>
+              <span class="demonstration">请选择电影类型</span>
               <el-cascader :show-all-levels="false" filterable  clearable :options="cateList" :props="cateProps" v-model="typeStr" @change="handleChange">
               </el-cascader>
             </el-form-item>
             <el-form-item label="电影地区" prop="area">
 <!--              <el-input v-model="addForm.area" ></el-input>-->
-              <span class="demonstration">请选择首映地区  </span>
-              <el-select v-model="addForm.area" placeholder="请选择">
-                <el-option-group v-for="group in options" :key="group.label" :label="group.label">
-                  <el-option v-for="item in group.options" :key="item.value" :label="item.label" :value="item.value">
+              <span class="demonstration">请选择首映地区</span>
+              <el-select filterable v-model="addForm.area" placeholder="请选择地区" @change="handleChange">
+                <el-option-group v-for="group in areaList" :key=group.id :label="group.authName">
+                  <el-option v-for="item in group.children" :key=item.id :label="item.authName" :value="item.authName">
+                    <span style="float: left">{{ item.authName }}</span>
+                    <span style="float: right; color: #8492a6; font-size: 13px">{{ item.value }}</span>
                   </el-option>
                 </el-option-group>
               </el-select>
@@ -89,7 +91,7 @@
 </template>
 
 <script>
-import _ from 'lodash'
+// import _ from 'lodash'
 
 export default {
   data() {
@@ -101,16 +103,16 @@ export default {
         director: 'test',
         actor: 'test',
         timeLength: 120,
-        score: '10',
+        score: 8.8,
         area: '中国',
-        language: '普通话',
-        startTime: '',
+        language: '国语',
+        startTime: '2023-01-01',
         // 商品所属的分类数组
-        type: '',
+        type: '未选'
         // 图片的数组
-        pics: []
       },
       typeStr: [],
+      pics: [],
       addFormRules: {
         name: [
           { required: true, message: '请输入电影名称', trigger: 'blur' }
@@ -130,6 +132,7 @@ export default {
       },
       // 电影类型列表
       cateList: [],
+      areaList: [],
       cateProps: {
         label: 'authName',
         value: 'authName',
@@ -148,24 +151,34 @@ export default {
     }
   },
   created() {
-    this.getCateList()
+    this.getCateAndAreaList()
   },
   methods: {
     // 获取所有商品分类数据
-    async getCateList() {
-      const { data: res } = await this.$http.get('categories/tree')
+    async getCateAndAreaList() {
+      const { data: res1 } = await this.$http.get('categories/tree')
 
-      if (res.status !== 200) {
+      if (res1.status !== 200) {
         return this.$message.error('获取电影分类数据失败！')
       }
 
-      this.cateList = res.data
+      this.cateList = res1.data
       // console.log(this.cateList)
+
+      const { data: res2 } = await this.$http.get('area/tree')
+
+      if (res2.status !== 200) {
+        return this.$message.error('获取电影分类数据失败！')
+      }
+
+      this.areaList = res2.data
+      // console.log(this.areaList)
     },
     // 级联选择器选中项变化，会触发这个函数
     handleChange() {
       this.addForm.type = this.typeStr.toString()
       // console.log(this.addForm.type)
+      // console.log(this.addForm.area)
     },
     // 处理图片预览效果
     handlePreview(file) {
@@ -200,17 +213,13 @@ export default {
         if (!valid) {
           return this.$message.error('请填写必要的表单项！')
         }
-        // 执行添加的业务逻辑
-        // lodash   cloneDeep(obj)
-        const form = _.cloneDeep(this.addForm)
-        form.type = form.type.join(',')
-        console.log(form)
 
         // 发起请求添加商品
         // 商品的名称，必须是唯一的
-        const { data: res } = await this.$http.post('movies', form)
+        const { data: res } = await this.$http.post('movieInfo/add',
+          this.addForm)
 
-        if (res.meta.status !== 201) {
+        if (res.status !== 200) {
           return this.$message.error('添加商品失败！')
         }
 

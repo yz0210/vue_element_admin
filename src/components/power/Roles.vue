@@ -17,7 +17,7 @@
       </el-row>
 
       <!-- 角色列表区域 -->
-      <el-table :data="rolelist"  border stripe >
+      <el-table :data="roleList"  border stripe >
         <!-- 展开列 -->
         <el-table-column type="expand" >
           <template slot-scope="scope">
@@ -64,7 +64,7 @@
     <!-- 分配权限的对话框 -->
     <el-dialog title="分配权限" :visible.sync="setRightDialogVisible" width="50%" @close="setRightDialogClosed">
       <!-- 树形控件 -->
-      <el-tree :data="rightslist" :props="treeProps" show-checkbox node-key="id" default-expand-all :default-checked-keys="defKeys" ref="treeRef"></el-tree>
+      <el-tree :data="rightsList" :props="treeProps" show-checkbox node-key="id" default-expand-all :default-checked-keys="defKeys" ref="treeRef"></el-tree>
       <span slot="footer" class="dialog-footer">
         <el-button @click="setRightDialogVisible = false">取 消</el-button>
         <el-button type="primary" @click="allotRights">确 定</el-button>
@@ -79,12 +79,12 @@ export default {
     return {
       // 所有角色列表数据
       // eslint-disable-next-line standard/array-bracket-even-spacing
-      rolelist: [],
+      roleList: [],
       // 控制分配权限对话框的显示与隐藏
       setRightDialogVisible: false,
       // 所有权限的数据
       // eslint-disable-next-line standard/array-bracket-even-spacing
-      rightslist: [],
+      rightsList: [],
       // 树形控件的属性绑定对象
       treeProps: {
         label: 'authName',
@@ -107,9 +107,9 @@ export default {
       if (res.status !== 200) {
         return this.$message.error('获取角色列表失败！')
       }
-      this.rolelist = res.data
+      this.roleList = res.data
 
-      // console.log(this.rolelist)
+      // console.log(this.roleList)
     },
     // 根据Id删除对应的权限
     removeRightById: async function (role, rightId) {
@@ -136,7 +136,7 @@ export default {
       }
 
       await this.getRolesList()
-      // role.children = this.data
+      role.children = this.data
     },
     // 展示分配权限的对话框
     async showSetRightDialog(role) {
@@ -149,8 +149,8 @@ export default {
       }
 
       // 把获取到的权限数据保存到 data 中
-      this.rightslist = res.data
-      // console.log(this.rightslist)
+      this.rightsList = res.data
+      // console.log(this.rightsList)
 
       // 递归获取三级节点的Id
       this.getLeafKeys(role, this.defKeys)
