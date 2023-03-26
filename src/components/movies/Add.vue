@@ -65,9 +65,9 @@
 <!--              <el-input v-model="addForm.area" ></el-input>-->
               <span class="demonstration">请选择首映地区</span>
               <el-select filterable v-model="addForm.area" placeholder="请选择地区" @change="handleChange">
-                <el-option-group v-for="group in areaList" :key=group.id :label="group.authName">
-                  <el-option v-for="item in group.children" :key=item.id :label="item.authName" :value="item.authName">
-                    <span style="float: left">{{ item.authName }}</span>
+                <el-option-group v-for="group in areaList" :key=group.id :label="group.label">
+                  <el-option v-for="item in group.children" :key=item.id :label="item.label" :value="item.label">
+                    <span style="float: left">{{ item.label }}</span>
                     <span style="float: right; color: #8492a6; font-size: 13px">{{ item.value }}</span>
                   </el-option>
                 </el-option-group>
@@ -134,8 +134,8 @@ export default {
       cateList: [],
       areaList: [],
       cateProps: {
-        label: 'authName',
-        value: 'authName',
+        label: 'label',
+        value: 'label',
         children: 'children',
         multiple: true,
         emitPath: false

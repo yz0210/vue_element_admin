@@ -15,9 +15,9 @@
       <!-- 选择商品分类区域 -->
       <el-row class="cat_opt">
         <el-col>
-          <span>选择商品分类：</span>
+          <span>选择电影分类：</span>
           <!-- 选择商品分类的级联选择框 -->
-          <el-cascader expand-trigger="hover" :options="catelist" :props="cateProps" v-model="selectedCateKeys" @change="handleChange">
+          <el-cascader expand-trigger="hover" :options="cateList" :props="cateProps" v-model="selectedCateKeys" @change="handleChange">
           </el-cascader>
         </el-col>
       </el-row>
@@ -120,11 +120,11 @@ export default {
   data() {
     return {
       // 商品分类列表
-      catelist: [],
+      cateList: [],
       // 级联选择框的配置对象
       cateProps: {
-        value: 'cat_id',
-        label: 'cat_name',
+        value: 'id',
+        label: 'label',
         children: 'children'
       },
       // 级联选择框双向绑定到的数组
@@ -165,14 +165,13 @@ export default {
   methods: {
     // 获取所有的商品分类列表
     async getCateList() {
-      const { data: res } = await this.$http.get('categories')
-      if (res.meta.status !== 200) {
+      const { data: res } = await this.$http.get('categories/tree')
+      if (res.status !== 200) {
         return this.$message.error('获取商品分类失败！')
       }
 
-      this.catelist = res.data
-
-      console.log(this.catelist)
+      this.cateList = res.data
+      // console.log(this.cateList)
     },
     // 级联选择框选中项变化，会触发这个函数
     handleChange() {
@@ -186,7 +185,7 @@ export default {
     // 获取参数的列表数据
     async getParamsData() {
       // 证明选中的不是三级分类
-      if (this.selectedCateKeys.length !== 3) {
+      if (this.selectedCateKeys.length !== 2) {
         this.selectedCateKeys = []
         this.manyTableData = []
         this.onlyTableData = []

@@ -33,16 +33,16 @@
               <!-- 图标 -->
               <i :class="iconsObj[item.id]"></i>
               <!-- 文本 -->
-              <span>{{ item.authName }}</span>
+              <span>{{ item.label }}</span>
             </template>
 
             <!-- 二级菜单 -->
-            <el-menu-item :index="'/' + subItem.path" v-for="subItem in item.children" :key="subItem.id" @click="saveNavState('/' + subItem.path)">
+            <el-menu-item :index="'/' + subItem.value" v-for="subItem in item.children" :key="subItem.id" @click="saveNavState('/' + subItem.value)">
               <template slot="title">
                 <!-- 图标 -->
                 <i class="el-icon-menu"></i>
                 <!-- 文本 -->
-                <span>{{ subItem.authName }}</span>
+                <span>{{ subItem.label }}</span>
               </template>
             </el-menu-item>
           </el-submenu>
