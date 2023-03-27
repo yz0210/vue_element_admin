@@ -268,7 +268,7 @@ export default {
       this.$refs.addFormRef.validate(async valid => {
         if (!valid) return
         // 可以发起添加用户的网络请求
-        const { data: res } = await this.$http.post('user/add', this.addForm)
+        const { data: res } = await this.$http.put('user/add', this.addForm)
         if (res.status !== 200) {
           this.$message.error('添加用户失败！')
         }

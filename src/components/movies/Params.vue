@@ -17,7 +17,7 @@
         <el-col>
           <span>选择电影分类：</span>
           <!-- 选择商品分类的级联选择框 -->
-          <el-cascader expand-trigger="hover" :options="cateList" :props="cateProps" v-model="selectedCateKeys" @change="handleChange">
+          <el-cascader props.expandTrigger="hover" :options="cateList" :props="cateProps" v-model="selectedCateKeys" @change="handleChange">
           </el-cascader>
         </el-col>
       </el-row>
@@ -165,7 +165,7 @@ export default {
   methods: {
     // 获取所有的商品分类列表
     async getCateList() {
-      const { data: res } = await this.$http.get('categories/tree')
+      const { data: res } = await this.$http.get('type/tree')
       if (res.status !== 200) {
         return this.$message.error('获取商品分类失败！')
       }

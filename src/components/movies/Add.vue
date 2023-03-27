@@ -58,7 +58,7 @@
           <el-tab-pane label="电影分类" name="3">
             <el-form-item label="电影类型" prop="movies_cat">
               <span class="demonstration">请选择电影类型</span>
-              <el-cascader :show-all-levels="false" filterable  clearable :options="cateList" :props="cateProps" v-model="typeStr" @change="handleChange">
+              <el-cascader :show-all-levels="false" filterable  clearable :options="typeList" :props="cateProps" v-model="typeStr" @change="handleChange">
               </el-cascader>
             </el-form-item>
             <el-form-item label="电影地区" prop="area">
@@ -131,7 +131,7 @@ export default {
         ]
       },
       // 电影类型列表
-      cateList: [],
+      typeList: [],
       areaList: [],
       cateProps: {
         label: 'label',
@@ -156,22 +156,15 @@ export default {
   methods: {
     // 获取所有商品分类数据
     async getCateAndAreaList() {
-      const { data: res1 } = await this.$http.get('categories/tree')
+      const { data: res } = await this.$http.get('cate/tree')
 
-      if (res1.status !== 200) {
+      if (res.status !== 200) {
         return this.$message.error('获取电影分类数据失败！')
       }
 
-      this.cateList = res1.data
+      this.typeList = res.data[0].children
       // console.log(this.cateList)
-
-      const { data: res2 } = await this.$http.get('area/tree')
-
-      if (res2.status !== 200) {
-        return this.$message.error('获取电影分类数据失败！')
-      }
-
-      this.areaList = res2.data
+      this.areaList = res.data[1].children
       // console.log(this.areaList)
     },
     // 级联选择器选中项变化，会触发这个函数
