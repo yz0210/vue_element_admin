@@ -156,7 +156,7 @@ export default {
   methods: {
     // 获取所有商品分类数据
     async getCateAndAreaList() {
-      const { data: res } = await this.$http.get('cate/tree')
+      const { data: res } = await this.$http.get('categories/tree')
 
       if (res.status !== 200) {
         return this.$message.error('获取电影分类数据失败！')

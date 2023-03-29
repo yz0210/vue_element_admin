@@ -17,11 +17,11 @@
       </el-row>
 
       <!-- 角色列表区域 -->
-      <el-table :data="roleList"  border stripe >
+      <el-table :data="roleList"   border stripe  :tree-props="{children: 'children'}">
         <!-- 展开列 -->
-        <el-table-column type="expand" >
+        <el-table-column type="expand"  >
           <template slot-scope="scope">
-            <el-row :class="['bdbottom', i1 === 0 ? 'bdtop' : '', 'vcenter']" v-for="(item1, i1) in scope.row.children" :key=item1.id >
+            <el-row :class="['bdBottom', i1 === 0 ? 'bdTop' : '', 'vcenter']" v-for="(item1, i1) in scope.row.children" :key="item1.id"  >
               <!-- 渲染一级权限 -->
               <el-col :span="5">
                 <el-tag closable @close="removeRightById(scope.row, item1.id)">{{item1.label}}</el-tag>
@@ -30,13 +30,13 @@
               <!-- 渲染二级和三级权限 -->
               <el-col :span="19">
                 <!-- 通过 for 循环 嵌套渲染二级权限 -->
-                <el-row :class="[i2 === 0 ? '' : 'bdtop', 'vcenter']" v-for="(item2, i2) in item1.children" :key=item2.id>
+                <el-row :class="[i2 === 0 ? '' : 'bdTop', 'vcenter']" v-for="(item2, i2) in item1.children" :key="item2.id">
                   <el-col :span="6">
                     <el-tag type="success" closable @close="removeRightById(scope.row, item2.id)">{{item2.label}}</el-tag>
                     <i class="el-icon-caret-right"></i>
                   </el-col>
                   <el-col :span="18">
-                    <el-tag type="warning" v-for="item3 in item2.children" :key=item3.id closable @close="removeRightById(scope.row, item3.id)">{{item3.label}}</el-tag>
+                    <el-tag type="warning" v-for="item3 in item2.children" :key="item3.id" closable @close="removeRightById(scope.row, item3.id)">{{item3.label}}</el-tag>
                   </el-col>
                 </el-row>
               </el-col>
@@ -64,7 +64,7 @@
     <!-- 分配权限的对话框 -->
     <el-dialog title="分配权限" :visible.sync="setRightDialogVisible" width="50%" @close="setRightDialogClosed">
       <!-- 树形控件 -->
-      <el-tree :data="rightsList" :props="treeProps" show-checkbox node-key="id" default-expand-all :default-checked-keys="defKeys" ref="treeRef"></el-tree>
+      <el-tree :data="rightsList" show-checkbox node-key="id" default-expand-all :default-checked-keys="defKeys" :props="TreeProps" ref="treeRef"></el-tree>
       <span slot="footer" class="dialog-footer">
         <el-button @click="setRightDialogVisible = false">取 消</el-button>
         <el-button type="primary" @click="allotRights">确 定</el-button>
@@ -86,9 +86,9 @@ export default {
       // eslint-disable-next-line standard/array-bracket-even-spacing
       rightsList: [],
       // 树形控件的属性绑定对象
-      treeProps: {
-        label: 'label',
-        children: 'children'
+      TreeProps: {
+        children: 'children',
+        label: 'label'
       },
       // 默认选中的节点Id值数组
       defKeys: [],
@@ -136,7 +136,7 @@ export default {
       }
 
       await this.getRolesList()
-      role.children = this.data
+      // role.children = this.data
     },
     // 展示分配权限的对话框
     async showSetRightDialog(role) {
@@ -202,11 +202,11 @@ export default {
   margin: 7px;
 }
 
-.bdtop {
+.bdTop {
   border-top: 1px solid #eee;
 }
 
-.bdbottom {
+.bdBottom {
   border-bottom: 1px solid #eee;
 }
 

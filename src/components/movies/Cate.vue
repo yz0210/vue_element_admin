@@ -26,7 +26,9 @@
         <template slot="order" slot-scope="scope" >
           <el-tag size="mini" v-if="scope.row.level===0" >一级</el-tag>
           <el-tag type="success" size="mini" v-else-if="scope.row.level===1">二级</el-tag>
-          <el-tag type="warning" size="mini" v-else>三级</el-tag>
+          <el-tag type="warning" size="mini" v-else-if="scope.row.level===2">三级</el-tag>
+          <el-tag type="danger" size="mini" v-else-if="scope.row.level===3">四级</el-tag>
+          <el-tag type="info" size="mini" v-else>五级</el-tag>
         </template>
         <!-- 操作 -->
         <template slot="opt">
@@ -43,12 +45,12 @@
       <!-- 添加分类的表单 -->
       <el-form :model="addCateForm" :rules="addCateFormRules" ref="addCateFormRef" label-width="100px">
         <el-form-item label="分类名称：" prop="cat_name" >
-          <el-input v-model="addCateForm.cat_name"></el-input>
+          <el-input v-model="addCateForm.label"></el-input>
         </el-form-item>
         <el-form-item label="父级分类：">
           <!-- options 用来指定数据源 -->
           <!-- props 用来指定配置对象 -->
-          <el-cascader  :options="parentCateList" :props="cateProps" v-model="addCateForm.selectedIdArray" @change="parentCateChanged" clearable >
+          <el-cascader  :options="parentCateList" :props="cateProps" v-model="selectedIdArray" @change="parentCateChanged" clearable >
           </el-cascader>
         </el-form-item>
       </el-form>
@@ -67,9 +69,6 @@ export default {
       // 商品分类的数据列表，默认为空
       cateList: [],
       parentCateList: [],
-      parentId: 0, // 分类的Id
-      cateId: 0, // 分类的Id
-      label: '',
       // 为table指定列的定义
       columns: [
         {
@@ -103,13 +102,14 @@ export default {
       // 添加分类的表单数据对象
       addCateForm: {
         // 将要添加的分类的名称
-        cat_name: '',
-        selectedIdArray: []
+        label: '',
+        parentId: 0
       },
+      cateId: 0, // 分类的Id
       selectedIdArray: [],
       // 添加分类表单的验证规则对象
       addCateFormRules: {
-        cat_name: [{ required: true, message: '请输入分类名称', trigger: 'blur' }]
+        label: [{ required: true, message: '请输入分类名称', trigger: 'blur' }]
       },
       // 指定级联选择器的配置对象
       cateProps: {
@@ -127,7 +127,7 @@ export default {
   methods: {
     // 获取商品分类数据
     async getCateList() {
-      const { data: res } = await this.$http.get('cate/tree')
+      const { data: res } = await this.$http.get('categories/tree')
 
       if (res.status !== 200) {
         return this.$message.error('获取电影分类失败！')
@@ -147,32 +147,29 @@ export default {
     // 获取父级分类的数据列表
     // 选择项发生变化触发这个函数
     parentCateChanged() {
-      this.label = this.addCateForm.cat_name
       // 如果 selectedKeys 数组中的 length 大于0，证明选中的父级分类
       // 反之，就说明没有选中任何父级分类
+      this.cateId = this.selectedIdArray[0]
       if (this.selectedIdArray.length > 0) {
-        if (this.addCateForm.selectedIdArray.length === 1) {
-          this.cateId = this.addCateForm.selectedIdArray[0]
-          this.parentId = 0
-        } else {
-          this.cateId = this.addCateForm.selectedIdArray[0]
-          this.parentId = this.addCateForm.selectedIdArray[this.addCateForm.selectedIdArray.length - 1]
+        this.addCateForm.parentId = this.selectedIdArray[this.selectedIdArray.length - 1]
+        if (this.selectedIdArray.length === 1) {
+          this.addCateForm.parentId = 0
         }
       } else {
         this.cateId = 0
-        this.parentId = 0
       }
     },
     // 点击按钮，添加新的分类
     addCate() {
-      console.log(this.addCateForm.selectedIdArray)
-      console.log(this.label)
+      this.parentCateChanged()
+      /*  console.log(this.selectedIdArray)
+      console.log(this.addCateForm.label)
       console.log(this.cateId)
-      console.log(this.parentId)
+      console.log(this.addCateForm.parentId) */
       this.$refs.addCateFormRef.validate(async valid => {
         if (!valid) return
-        const { data: res } = await this.$http.post('categories', this.addCateForm)
-
+        // eslint-disable-next-line no-template-curly-in-string
+        const { data: res } = await this.$http.post(`categories/${this.cateId}/add`, this.addCateForm)
         if (res.status !== 200) {
           return this.$message.error('添加分类失败！')
         }
